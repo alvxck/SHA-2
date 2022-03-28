@@ -27,7 +27,29 @@ class SHA256:
         self.digest = ''
         
     def pre_process(self):
-        pass
+        rawData = ''
+
+        # Convert each character in 'self.data' to binary. Save to 'rawData' string.
+        for char in self.data:
+            rawData += format(ord(char), '08b')
+
+        # Add a single '1' to 'rawData' and pad with 0's until it is a multiple of 512.
+        rawData += '1'
+
+        while (len(rawData) % 512 != 0):
+            rawData += '0'
+        
+        # If any of the last 64-bits in 'rawData' are a '1' append 512 0's to 'rawData'. Modify the last 64-bits of 'rawData' to represent the length of 'data' in binary.
+        if '1' in rawData[-64:]:
+            rawData += format(8*len(self.data), '0512b')
+        else:
+            rawData = rawData[0:-64] + format(8*len(self.data), '064b') 
+            
+        # Break 'rawData' into 512-bit blocks consisting of 32-bit entries and append 48 '00000000000000000000000000000000' to the end of each block. Save blocks to 'self.blocks' array.
+        for x in range(0, len(rawData) // 512):
+            self.blocks.append([rawData[x*512:(x*512)+512]])
+            self.blocks[x] = [self.blocks[x][0][y:y+32] for y in range(0, len(self.blocks[x][0]), 32)]
+            self.blocks[x].extend(['00000000000000000000000000000000']*48) 
 
     def mutate(self):
         pass
