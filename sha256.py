@@ -26,7 +26,7 @@ class SHA256:
             '10010000101111101111111111111010', '10100100010100000110110011101011', '10111110111110011010001111110111', '11000110011100010111100011110010']
         self.digest = ''
         
-    def pre_process(self):
+    def hash(self):
         rawData = ''
 
         # Convert each character in 'self.data' to binary. Save to 'rawData' string.
@@ -51,11 +51,3 @@ class SHA256:
             self.blocks[x] = [self.blocks[x][0][y:y+32] for y in range(0, len(self.blocks[x][0]), 32)]
             self.blocks[x].extend(['00000000000000000000000000000000']*48) 
 
-    def mutate(self):
-        pass
-
-    def compress(self):
-        pass
-
-    def post_process(self):
-        pass
