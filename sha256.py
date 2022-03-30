@@ -1,4 +1,4 @@
-
+from operations import *
 
 class SHA256:
     def __init__(self, data):
@@ -50,5 +50,12 @@ class SHA256:
             self.blocks.append([rawData[x*512:(x*512)+512]])
             self.blocks[x] = [self.blocks[x][0][y:y+32] for y in range(0, len(self.blocks[x][0]), 32)]
             self.blocks[x].extend(['00000000000000000000000000000000']*48) 
+
+        # Modify the 48 '00000000000000000000000000000000' within each block using official SHA-256 bitwise operations.
+        for block in range(0, len(self.blocks)):
+            for entry in range(16, 64):
+                s0 = XOR([ROTR(self.blocks[block][entry-15], 7), ROTR(self.blocks[block][entry-15], 18), RSHIFT(self.blocks[block][entry-15], 3)])
+                s1 = XOR([ROTR(self.blocks[block][entry-2], 17), ROTR(self.blocks[block][entry-2], 19), RSHIFT(self.blocks[block][entry-2], 10)])
+                self.blocks[block][entry] = MOD32([self.blocks[block][entry-16], s0, self.blocks[block][entry-7], s1])
         
         return self.blocks
