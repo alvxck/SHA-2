@@ -50,4 +50,5 @@ class SHA256:
             self.blocks.append([rawData[x*512:(x*512)+512]])
             self.blocks[x] = [self.blocks[x][0][y:y+32] for y in range(0, len(self.blocks[x][0]), 32)]
             self.blocks[x].extend(['00000000000000000000000000000000']*48) 
-
+        
+        return self.blocks
