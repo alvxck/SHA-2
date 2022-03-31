@@ -95,4 +95,8 @@ class SHA256:
             self.hashConstants[6] = MOD32([self.hashConstants[6], g])
             self.hashConstants[7] = MOD32([self.hashConstants[7], h])
 
-        return self.hashConstants
+        # Convert each of the modified hash constants to hex and concatenate to obtain the digest of the 'self.data'.
+        for hash in self.hashConstants:
+            self.digest += format(int(hash, 2), 'x') 
+
+        return self.digest
