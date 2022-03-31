@@ -43,7 +43,7 @@ class SHA256:
         if '1' in rawData[-64:]:
             rawData += format(8*len(self.data), '0512b')
         else:
-            rawData = rawData[0:-64] + format(8*len(self.data), '064b') 
+            rawData = rawData[:-64] + format(8*len(self.data), '064b') 
             
         # Break 'rawData' into 512-bit blocks consisting of 32-bit entries and append 48 '00000000000000000000000000000000' to the end of each block. Save blocks to 'self.blocks' array.
         for x in range(0, len(rawData) // 512):
@@ -58,4 +58,41 @@ class SHA256:
                 s1 = XOR([ROTR(self.blocks[block][entry-2], 17), ROTR(self.blocks[block][entry-2], 19), RSHIFT(self.blocks[block][entry-2], 10)])
                 self.blocks[block][entry] = MOD32([self.blocks[block][entry-16], s0, self.blocks[block][entry-7], s1])
         
-        return self.blocks
+        # Initialize and Modify (a-h) once for each entry within each block inside the 'self.blocks' array using official SHA-256 bitwise operations.
+        for block in range(0, len(self.blocks)):
+            a = self.hashConstants[0]
+            b = self.hashConstants[1]
+            c = self.hashConstants[2]
+            d = self.hashConstants[3]
+            e = self.hashConstants[4]
+            f = self.hashConstants[5]
+            g = self.hashConstants[6]
+            h = self.hashConstants[7]
+
+            for entry in range(0, 64):
+                s0 = XOR([ROTR(e, 6), ROTR(e, 11), ROTR(e, 25)])
+                ch = XOR([AND([e, f]), AND([NOT(e), g])])
+                temp1 = MOD32([h, s0, ch, self.roundConstants[entry], self.blocks[block][entry]])
+                s1 = XOR([ROTR(a, 2), ROTR(a, 13), ROTR(a, 22)])
+                maj = XOR([AND([a, b]), AND([a, c]), AND([b, c])])
+                temp2 = MOD32([s1, maj])
+
+                h = g
+                g = f
+                f = e
+                e = MOD32([d, temp1])
+                d = c
+                c = b
+                b = a
+                a = MOD32([temp1, temp2])
+
+            self.hashConstants[0] = MOD32([self.hashConstants[0], a])
+            self.hashConstants[1] = MOD32([self.hashConstants[1], b])
+            self.hashConstants[2] = MOD32([self.hashConstants[2], c])
+            self.hashConstants[3] = MOD32([self.hashConstants[3], d])
+            self.hashConstants[4] = MOD32([self.hashConstants[4], e])
+            self.hashConstants[5] = MOD32([self.hashConstants[5], f])
+            self.hashConstants[6] = MOD32([self.hashConstants[6], g])
+            self.hashConstants[7] = MOD32([self.hashConstants[7], h])
+
+        return self.hashConstants
