@@ -32,3 +32,6 @@ def XOR(nums):
 # NOT Bitwise Operator. [exp. NOT('0') -> '1']
 def NOT(num):
     return format(~int(num, 2), '032b')
+
+
+print(NOT('0110100001100101011011000110110'))

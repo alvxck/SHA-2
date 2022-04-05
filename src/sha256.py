@@ -1,4 +1,4 @@
-from operations import *
+from src.operations import *
 
 class SHA256:
     def __init__(self, data):

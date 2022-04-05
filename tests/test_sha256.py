@@ -1,5 +1,5 @@
 import unittest
-from sha256 import SHA256
+from src.sha256 import *
 
 class TestSHA256(unittest.TestCase):
     def test_hash(self):
@@ -9,3 +9,4 @@ class TestSHA256(unittest.TestCase):
 if __name__ == '__main__':
     unittest.main()
     
+
