@@ -60,14 +60,7 @@ class SHA256:
         
         # Initialize and Modify (a-h) once for each entry within each block inside the 'self.blocks' array using official SHA-256 bitwise operations.
         for block in range(0, len(self.blocks)):
-            a = self.hashConstants[0]
-            b = self.hashConstants[1]
-            c = self.hashConstants[2]
-            d = self.hashConstants[3]
-            e = self.hashConstants[4]
-            f = self.hashConstants[5]
-            g = self.hashConstants[6]
-            h = self.hashConstants[7]
+            a, b, c, d, e, f, g, h = self.hashConstants
 
             for entry in range(0, 64):
                 s0 = XOR([ROTR(e, 6), ROTR(e, 11), ROTR(e, 25)])
