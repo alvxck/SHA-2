@@ -56,7 +56,7 @@ class SHA256:
             for entry in range(16, 64):
                 s0 = XOR([ROTR(self.blocks[block][entry-15], 7), ROTR(self.blocks[block][entry-15], 18), RSHIFT(self.blocks[block][entry-15], 3)])
                 s1 = XOR([ROTR(self.blocks[block][entry-2], 17), ROTR(self.blocks[block][entry-2], 19), RSHIFT(self.blocks[block][entry-2], 10)])
-                self.blocks[block][entry] = MOD32([self.blocks[block][entry-16], s0, self.blocks[block][entry-7], s1])
+                self.blocks[block][entry] = SUM([self.blocks[block][entry-16], s0, self.blocks[block][entry-7], s1])
         
         # Initialize and Modify (a-h) once for each entry within each block inside the 'self.blocks' array using official SHA-256 bitwise operations.
         for block in range(0, len(self.blocks)):
@@ -65,28 +65,28 @@ class SHA256:
             for entry in range(0, 64):
                 s0 = XOR([ROTR(e, 6), ROTR(e, 11), ROTR(e, 25)])
                 ch = XOR([AND([e, f]), AND([NOT(e), g])])
-                temp1 = MOD32([h, s0, ch, self.roundConstants[entry], self.blocks[block][entry]])
+                temp1 = SUM([h, s0, ch, self.roundConstants[entry], self.blocks[block][entry]])
                 s1 = XOR([ROTR(a, 2), ROTR(a, 13), ROTR(a, 22)])
                 maj = XOR([AND([a, b]), AND([a, c]), AND([b, c])])
-                temp2 = MOD32([s1, maj])
+                temp2 = SUM([s1, maj])
 
                 h = g
                 g = f
                 f = e
-                e = MOD32([d, temp1])
+                e = SUM([d, temp1])
                 d = c
                 c = b
                 b = a
-                a = MOD32([temp1, temp2])
+                a = SUM([temp1, temp2])
 
-            self.hashConstants[0] = MOD32([self.hashConstants[0], a])
-            self.hashConstants[1] = MOD32([self.hashConstants[1], b])
-            self.hashConstants[2] = MOD32([self.hashConstants[2], c])
-            self.hashConstants[3] = MOD32([self.hashConstants[3], d])
-            self.hashConstants[4] = MOD32([self.hashConstants[4], e])
-            self.hashConstants[5] = MOD32([self.hashConstants[5], f])
-            self.hashConstants[6] = MOD32([self.hashConstants[6], g])
-            self.hashConstants[7] = MOD32([self.hashConstants[7], h])
+            self.hashConstants[0] = SUM([self.hashConstants[0], a])
+            self.hashConstants[1] = SUM([self.hashConstants[1], b])
+            self.hashConstants[2] = SUM([self.hashConstants[2], c])
+            self.hashConstants[3] = SUM([self.hashConstants[3], d])
+            self.hashConstants[4] = SUM([self.hashConstants[4], e])
+            self.hashConstants[5] = SUM([self.hashConstants[5], f])
+            self.hashConstants[6] = SUM([self.hashConstants[6], g])
+            self.hashConstants[7] = SUM([self.hashConstants[7], h])
 
         # Convert each of the modified hash constants to hex and concatenate to obtain the digest of the 'self.data'.
         for hash in self.hashConstants:
