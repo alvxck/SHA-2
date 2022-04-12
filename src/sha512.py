@@ -1,13 +1,8 @@
-from src.operations import *
-
 
 class SHA512:
-    def __init__(self, data):
-        self.data = data
-        self.blocks = []
+    def __init__(self):
         self.hashConstants = []
         self.roundConstants = []
-        self.digest = ''
 
-    def hash():
+    def hash(self, raw_data):
         pass

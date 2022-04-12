@@ -1,5 +1,3 @@
-from src.operations import *
-
 
 class SHA384:
     def __init__(self, data):
