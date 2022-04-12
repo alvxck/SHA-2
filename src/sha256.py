@@ -1,95 +1,86 @@
-from src.operations import *
+
 
 class SHA256:
-    def __init__(self, data):
-        self.data = data
-        self.blocks = []
+    def __init__(self):
         self.hashConstants = [
-            '01101010000010011110011001100111', '10111011011001111010111010000101', '00111100011011101111001101110010', '10100101010011111111010100111010',
-            '01010001000011100101001001111111', '10011011000001010110100010001100', '00011111100000111101100110101011', '01011011111000001100110100011001']
+            0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19 ]
         self.roundConstants = [
-            '01000010100010100010111110011000', '01110001001101110100010010010001', '10110101110000001111101111001111', '11101001101101011101101110100101', 
-            '00111001010101101100001001011011', '01011001111100010001000111110001', '10010010001111111000001010100100', '10101011000111000101111011010101', 
-            '11011000000001111010101010011000', '00010010100000110101101100000001', '00100100001100011000010110111110', '01010101000011000111110111000011',
-            '01110010101111100101110101110100', '10000000110111101011000111111110', '10011011110111000000011010100111', '11000001100110111111000101110100',
-            '11100100100110110110100111000001', '11101111101111100100011110000110', '00001111110000011001110111000110', '00100100000011001010000111001100',
-            '00101101111010010010110001101111', '01001010011101001000010010101010', '01011100101100001010100111011100', '01110110111110011000100011011010',
-            '10011000001111100101000101010010', '10101000001100011100011001101101', '10110000000000110010011111001000', '10111111010110010111111111000111', 
-            '11000110111000000000101111110011', '11010101101001111001000101000111', '00000110110010100110001101010001', '00010100001010010010100101100111', 
-            '00100111101101110000101010000101', '00101110000110110010000100111000', '01001101001011000110110111111100', '01010011001110000000110100010011', 
-            '01100101000010100111001101010100', '01110110011010100000101010111011', '10000001110000101100100100101110', '10010010011100100010110010000101', 
-            '10100010101111111110100010100001', '10101000000110100110011001001011', '11000010010010111000101101110000', '11000111011011000101000110100011', 
-            '11010001100100101110100000011001', '11010110100110010000011000100100', '11110100000011100011010110000101', '00010000011010101010000001110000', 
-            '00011001101001001100000100010110', '00011110001101110110110000001000', '00100111010010000111011101001100', '00110100101100001011110010110101', 
-            '00111001000111000000110010110011', '01001110110110001010101001001010', '01011011100111001100101001001111', '01101000001011100110111111110011', 
-            '01110100100011111000001011101110', '01111000101001010110001101101111', '10000100110010000111100000010100', '10001100110001110000001000001000', 
-            '10010000101111101111111111111010', '10100100010100000110110011101011', '10111110111110011010001111110111', '11000110011100010111100011110010']
-        self.digest = ''
+            0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+            0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+            0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+            0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+            0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+            0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+            0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+            0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2 ]
         
-    def hash(self):
-        rawData = ''
+    def hash(self, raw_data):
+        # 1. Pre-Process 'raw_data'
+        data = [ord(char) for char in raw_data]
 
-        # Convert each character in 'self.data' to binary. Save to 'rawData' string.
-        for char in self.data:
-            rawData += format(ord(char), '08b')
+        data.append(128)
 
-        # Add a single '1' to 'rawData' and pad with 0's until it is a multiple of 512.
-        rawData += '1'
-
-        while (len(rawData) % 512 != 0):
-            rawData += '0'
+        while (len(data) % 64 != 0):
+            data.append(0)
         
-        # If any of the last 64-bits in 'rawData' are a '1' append 512 0's to 'rawData'. Modify the last 64-bits of 'rawData' to represent the length of 'data' in binary.
-        if '1' in rawData[-64:]:
-            rawData += format(8*len(self.data), '0512b')
+        schedule = ''.join([format(num, '08b') for num in data])
+
+        if '1' in schedule[-64:]:
+            schedule += format(8*len(raw_data), '0512b')
         else:
-            rawData = rawData[:-64] + format(8*len(self.data), '064b') 
-            
-        # Break 'rawData' into 512-bit blocks consisting of 32-bit entries and append 48 '00000000000000000000000000000000' to the end of each block. Save blocks to 'self.blocks' array.
-        for x in range(0, len(rawData) // 512):
-            self.blocks.append([rawData[x*512:(x*512)+512]])
-            self.blocks[x] = [self.blocks[x][0][y:y+32] for y in range(0, len(self.blocks[x][0]), 32)]
-            self.blocks[x].extend(['00000000000000000000000000000000']*48) 
+            schedule = schedule[:-64] + format(8*len(raw_data), '064b')
 
-        # Modify the 48 '00000000000000000000000000000000' within each block using official SHA-256 bitwise operations.
-        for block in range(0, len(self.blocks)):
+        # 2. Chunk Loop
+        blocks = []
+
+        for x in range(0, len(schedule) // 512):
+            blocks.append([schedule[x*512:(x*512)+512]])
+            blocks[x] = [int(blocks[x][0][y:y+32], 2) for y in range(0, len(blocks[x][0]), 32)]
+            blocks[x].extend([0]*48) 
+
+        # 3. Compression Loop
+        for block in range(0, len(blocks)):
             for entry in range(16, 64):
-                s0 = XOR([ROTR(self.blocks[block][entry-15], 7), ROTR(self.blocks[block][entry-15], 18), RSHIFT(self.blocks[block][entry-15], 3)])
-                s1 = XOR([ROTR(self.blocks[block][entry-2], 17), ROTR(self.blocks[block][entry-2], 19), RSHIFT(self.blocks[block][entry-2], 10)])
-                self.blocks[block][entry] = SUM([self.blocks[block][entry-16], s0, self.blocks[block][entry-7], s1])
-        
-        # Initialize and Modify (a-h) once for each entry within each block inside the 'self.blocks' array using official SHA-256 bitwise operations.
-        for block in range(0, len(self.blocks)):
+                s0 = (rotr(blocks[block][entry-15], 7)) ^ (rotr(blocks[block][entry-15], 18)) ^ (blocks[block][entry-15] >> 3)
+                s1 = (rotr(blocks[block][entry-2], 17)) ^ (rotr(blocks[block][entry-2], 19)) ^ (blocks[block][entry-2]>> 10)
+                blocks[block][entry] = (blocks[block][entry-16] + s0 + blocks[block][entry-7] + s1) % 2**32
+    
+        # 4. Mutation Loop
+        for block in range(0, len(blocks)):
             a, b, c, d, e, f, g, h = self.hashConstants
 
             for entry in range(0, 64):
-                s0 = XOR([ROTR(e, 6), ROTR(e, 11), ROTR(e, 25)])
-                ch = XOR([AND([e, f]), AND([NOT(e), g])])
-                temp1 = SUM([h, s0, ch, self.roundConstants[entry], self.blocks[block][entry]])
-                s1 = XOR([ROTR(a, 2), ROTR(a, 13), ROTR(a, 22)])
-                maj = XOR([AND([a, b]), AND([a, c]), AND([b, c])])
-                temp2 = SUM([s1, maj])
+                s0 = (rotr(e, 6)) ^ (rotr(e, 11)) ^ (rotr(e, 25))
+                ch = (e & f) ^ (~e & g)
+                temp1 = (h + s0 + ch + self.roundConstants[entry] + blocks[block][entry]) % 2**32
+                s1 = (rotr(a, 2)) ^ (rotr(a, 13)) ^ (rotr(a, 22))
+                maj = (a & b) ^ (a & c) ^ (b & c)
+                temp2 = (s1 + maj) % 2**32
 
                 h = g
                 g = f
                 f = e
-                e = SUM([d, temp1])
+                e = (d + temp1) % 2**32
                 d = c
                 c = b
                 b = a
-                a = SUM([temp1, temp2])
+                a = (temp1 + temp2) % 2**32
 
-            self.hashConstants[0] = SUM([self.hashConstants[0], a])
-            self.hashConstants[1] = SUM([self.hashConstants[1], b])
-            self.hashConstants[2] = SUM([self.hashConstants[2], c])
-            self.hashConstants[3] = SUM([self.hashConstants[3], d])
-            self.hashConstants[4] = SUM([self.hashConstants[4], e])
-            self.hashConstants[5] = SUM([self.hashConstants[5], f])
-            self.hashConstants[6] = SUM([self.hashConstants[6], g])
-            self.hashConstants[7] = SUM([self.hashConstants[7], h])
+            self.hashConstants[0] = (self.hashConstants[0] + a) % 2**32
+            self.hashConstants[1] = (self.hashConstants[1] + b) % 2**32
+            self.hashConstants[2] = (self.hashConstants[2] + c) % 2**32
+            self.hashConstants[3] = (self.hashConstants[3] + d) % 2**32
+            self.hashConstants[4] = (self.hashConstants[4] + e) % 2**32
+            self.hashConstants[5] = (self.hashConstants[5] + f) % 2**32
+            self.hashConstants[6] = (self.hashConstants[6] + g) % 2**32
+            self.hashConstants[7] = (self.hashConstants[7] + h) % 2**32
 
-        # Convert each of the modified hash constants to hex and concatenate to obtain the digest of the 'self.data'.
-        for hash in self.hashConstants:
-            self.digest += format(int(hash, 2), 'x') 
+        # 5. Digest Concatenation
+        digest = ''.join([format(hash, 'x') for hash in self.hashConstants])
 
-        return self.digest
+        return digest
+
+# Right-Rotate Bitwise Operator. [exp. rotr('000111', 2) -> '110001']
+def rotr(num, bits):
+    x = format(num, '032b')
+    return int(x[-bits:] + x[:len(x)-bits], 2)
