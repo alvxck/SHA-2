@@ -76,11 +76,10 @@ class SHA256:
             self.hashConstants[7] = (self.hashConstants[7] + h) % 2**32
 
         # 5. Digest Concatenation
-        digest = ''.join([format(hash, 'x') for hash in self.hashConstants])
+        digest = ''.join([format(hash, '08x') for hash in self.hashConstants])
 
         return digest
 
 # Right-Rotate Bitwise Operator. [exp. rotr('000111', 2) -> '110001']
 def rotr(num, bits):
-    x = format(num, '032b')
-    return int(x[-bits:] + x[:len(x)-bits], 2)
+    return (num >> bits) | (num << (32 - bits))
