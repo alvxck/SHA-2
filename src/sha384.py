@@ -1,10 +1,10 @@
 
 class SHA384:
     def __init__(self):
-        self.hashConstants = [
+        self.hash_constants = [
             0xcbbb9d5dc1059ed8, 0x629a292a367cd507, 0x9159015a3070dd17, 0x152fecd8f70e5939, 
             0x67332667ffc00b31, 0x8eb44a8768581511, 0xdb0c2e0d64f98fa7, 0x47b5481dbefa4fa4 ]
-        self.roundConstants = [
+        self.round_constants = [
             0x428a2f98d728ae22, 0x7137449123ef65cd, 0xb5c0fbcfec4d3b2f, 0xe9b5dba58189dbbc,
             0x3956c25bf348b538, 0x59f111f1b605d019, 0x923f82a4af194f9b, 0xab1c5ed5da6d8118,
             0xd807aa98a3030242, 0x12835b0145706fbe, 0x243185be4ee4b28c, 0x550c7dc3d5ffb4e2,
@@ -26,27 +26,20 @@ class SHA384:
             0x28db77f523047d84, 0x32caab7b40c72493, 0x3c9ebe0a15c9bebc, 0x431d67c49c100d4c,
             0x4cc5d4becb3e42b6, 0x597f299cfc657e2a, 0x5fcb6fab3ad6faec, 0x6c44198c4a475817 ]
         
-    def hash(self, raw_data):
-        # 1. Pre-Process 'raw_data'
-        data = [ord(char) for char in raw_data]
+    def hash(self, message):
+        # 1. Pre-Process 'message'
+        data_len = len(message)
 
-        data.append(128)
-
-        while (len(data) % 128 != 0):
-            data.append(0)
-        
-        schedule = ''.join([format(num, '08b') for num in data])
-
-        if '1' in schedule[-128:]:
-            schedule += format(8*len(raw_data), '01024b')
+        if (data_len % 128) < 80:
+            data = ''.join([format(ord(x), '08b') for x in message]) + '1'+ ''.join([format(8*data_len, f'0{1023-((8*data_len)%1024)}b')])
         else:
-            schedule = schedule[:-128] + format(8*len(raw_data), '0128b')
+            data = ''.join([format(ord(x), '08b') for x in message]) + '1'+ ''.join([format(8*data_len, f'0{2043-((8*data_len)%1024)}b')])
         
         # 2. Chunk Loop
         blocks = []
 
-        for x in range(0, len(schedule) // 1024):
-            blocks.append([schedule[x*1024:(x*1024)+1024]])
+        for x in range(0, len(data) // 1024):
+            blocks.append([data[x*1024:(x*1024)+1024]])
             blocks[x] = [int(blocks[x][0][y:y+64], 2) for y in range(0, len(blocks[x][0]), 64)]
             blocks[x].extend([0]*64) 
 
@@ -59,12 +52,12 @@ class SHA384:
     
         # 4. Mutation Loop
         for block in range(0, len(blocks)):
-            a, b, c, d, e, f, g, h = self.hashConstants
+            a, b, c, d, e, f, g, h = self.hash_constants
 
             for entry in range(0, 80):
                 s0 = (rotr(e, 14)) ^ (rotr(e, 18)) ^ (rotr(e, 41))
                 ch = (e & f) ^ (~e & g)
-                temp1 = (h + s0 + ch + self.roundConstants[entry] + blocks[block][entry]) % 2**64
+                temp1 = (h + s0 + ch + self.round_constants[entry] + blocks[block][entry]) % 2**64
                 s1 = (rotr(a, 28)) ^ (rotr(a, 34)) ^ (rotr(a, 39))
                 maj = (a & b) ^ (a & c) ^ (b & c)
                 temp2 = (s1 + maj) % 2**64
@@ -78,17 +71,17 @@ class SHA384:
                 b = a
                 a = (temp1 + temp2) % 2**64 
 
-            self.hashConstants[0] = (self.hashConstants[0] + a) % 2**64 
-            self.hashConstants[1] = (self.hashConstants[1] + b) % 2**64 
-            self.hashConstants[2] = (self.hashConstants[2] + c) % 2**64 
-            self.hashConstants[3] = (self.hashConstants[3] + d) % 2**64 
-            self.hashConstants[4] = (self.hashConstants[4] + e) % 2**64 
-            self.hashConstants[5] = (self.hashConstants[5] + f) % 2**64
-            self.hashConstants[6] = (self.hashConstants[6] + g) % 2**64
-            self.hashConstants[7] = (self.hashConstants[7] + h) % 2**64 
+            self.hash_constants[0] = (self.hash_constants[0] + a) % 2**64 
+            self.hash_constants[1] = (self.hash_constants[1] + b) % 2**64 
+            self.hash_constants[2] = (self.hash_constants[2] + c) % 2**64 
+            self.hash_constants[3] = (self.hash_constants[3] + d) % 2**64 
+            self.hash_constants[4] = (self.hash_constants[4] + e) % 2**64 
+            self.hash_constants[5] = (self.hash_constants[5] + f) % 2**64
+            self.hash_constants[6] = (self.hash_constants[6] + g) % 2**64
+            self.hash_constants[7] = (self.hash_constants[7] + h) % 2**64 
 
         # 5. Digest Concatenation
-        digest = ''.join([format(hash, '016x') for hash in self.hashConstants[:6]])
+        digest = ''.join([format(hash, '016x') for hash in self.hash_constants[:6]])
 
         return digest
 
