@@ -19,9 +19,9 @@ class SHA256:
         data_len = len(message)
 
         if (data_len % 64) < 48:
-            data = ''.join([format(ord(x), '08b') for x in message]) + '1'+ ''.join([format(8*data_len, f'0{511-((8*data_len)%512)}b')])
+            data = ''.join([format(ord(x), '08b') for x in message]) + '1' + ''.join([format(8*data_len, f'0{511-((8*data_len)%512)}b')])
         else:
-            data = ''.join([format(ord(x), '08b') for x in message]) + '1'+ ''.join([format(8*data_len, f'0{1023-((8*data_len)%512)}b')])
+            data = ''.join([format(ord(x), '08b') for x in message]) + '1' + ''.join([format(8*data_len, f'0{1023-((8*data_len)%512)}b')])
 
         # 2. Chunk Loop
         blocks = []
@@ -76,3 +76,7 @@ class SHA256:
 # Right-Rotate Bitwise Operator. [exp. rotr('000111', 2) -> '110001']
 def rotr(num, bits):
     return (num >> bits) | (num << (32 - bits))
+
+
+test = SHA256()
+print(test.hash('In encryption, data is transformed into a secure format that is unreadable unless the recipient has a key. In its encrypted form, the data may be of unlimited size, often just as long as when unencrypted.'))
