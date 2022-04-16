@@ -1,5 +1,4 @@
 
-
 class SHA256:
     def __init__(self):
         self.hash_constants = [
@@ -16,12 +15,12 @@ class SHA256:
         
     def hash(self, message):
         # 1. Pre-Process 'message'
-        data_len = len(message)
+        data_len = 8 * len(message)
 
-        if (data_len % 64) < 48:
-            data = ''.join([format(ord(x), '08b') for x in message]) + '1' + ''.join([format(8*data_len, f'0{511-((8*data_len)%512)}b')])
+        if (data_len % 512) < 448:
+            data = ''.join([format(ord(x), '08b') for x in message]) + '1' + ''.join([format(data_len, f'0{511-((data_len)%512)}b')])
         else:
-            data = ''.join([format(ord(x), '08b') for x in message]) + '1' + ''.join([format(8*data_len, f'0{1023-((8*data_len)%512)}b')])
+            data = ''.join([format(ord(x), '08b') for x in message]) + '1' + ''.join([format(data_len, f'0{1023-((data_len)%512)}b')])
 
         # 2. Chunk Loop
         blocks = []
@@ -70,13 +69,9 @@ class SHA256:
 
         # 5. Digest Concatenation
         digest = ''.join([format(hash, '08x') for hash in self.hash_constants])
-
+        
         return digest
 
 # Right-Rotate Bitwise Operator. [exp. rotr('000111', 2) -> '110001']
 def rotr(num, bits):
     return (num >> bits) | (num << (32 - bits))
-
-
-test = SHA256()
-print(test.hash('In encryption, data is transformed into a secure format that is unreadable unless the recipient has a key. In its encrypted form, the data may be of unlimited size, often just as long as when unencrypted.'))

@@ -28,12 +28,12 @@ class SHA512:
         
     def hash(self, message):
         # 1. Pre-Process 'message'
-        data_len = len(message)
+        data_len = 8 * len(message)
 
-        if (data_len % 128) < 80:
-            data = ''.join([format(ord(x), '08b') for x in message]) + '1' + ''.join([format(8*data_len, f'0{1023-((8*data_len)%1024)}b')])
+        if (data_len % 1024) < 896:
+            data = ''.join([format(ord(x), '08b') for x in message]) + '1' + ''.join([format(data_len, f'0{1023-((data_len)%1024)}b')])
         else:
-            data = ''.join([format(ord(x), '08b') for x in message]) + '1' + ''.join([format(8*data_len, f'0{2043-((8*data_len)%1024)}b')])
+            data = ''.join([format(ord(x), '08b') for x in message]) + '1' + ''.join([format(data_len, f'0{2043-((data_len)%1024)}b')])
         
         # 2. Chunk Loop
         blocks = []
