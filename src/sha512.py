@@ -86,6 +86,6 @@ class SHA512:
         return digest
 
 
-# Right-Rotate Bitwise Operator. [exp. rotr('000111', 2) -> '110001']
+# Right-Rotate Bitwise Operator.
 def rotr(num, bits):
     return (num >> bits) | (num << (64 - bits))
