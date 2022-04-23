@@ -1,5 +1,5 @@
 import unittest
-from src.sha384 import *
+from sha2.sha384 import *
 
 class TestSHA384(unittest.TestCase):
     def test_hash(self):
@@ -9,7 +9,7 @@ class TestSHA384(unittest.TestCase):
 
         # case 2: multi-block test
         case2 = SHA384()
-        self.assertEqual(case2.hash('In encryption, data is transformed into a secure format that is unreadable unless the recipient has a key. In its encrypted form, the data may be of unlimited size, often just as long as when unencrypted.'), 'ac3970005c69c1c7f794f758dc0707284030710ed8f3e785c4572e8ab513265277467a2d84d5243c364fcf08dbcd2b7a')
+        self.assertEqual(case2.hash('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip'), '146b481a1f3a61b1fb59e88d3b4b0ee964cbcafb862ae56c5ee94da72fb715c20187ebcca51414bdf50f95dfa4a812bf')
 
 
 

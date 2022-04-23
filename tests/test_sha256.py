@@ -1,5 +1,5 @@
 import unittest
-from src.sha256 import *
+from sha2.sha256 import *
 
 class TestSHA256(unittest.TestCase):
     def test_hash(self):
@@ -9,7 +9,7 @@ class TestSHA256(unittest.TestCase):
 
         # case 2: multi-block test
         case2 = SHA256()
-        self.assertEqual(case2.hash('In encryption, data is transformed into a secure format that is unreadable unless the recipient has a key. In its encrypted form, the data may be of unlimited size, often just as long as when unencrypted.'), '9fcdb976f1b5e4832487595c7dd0df03fd9d3ec0645f3ca845e2b60d773b7619')
+        self.assertEqual(case2.hash('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip'), 'a511b93b6dc0854560cbff02dab131a2bf6e7fb48511b80af9e0bb72bbb9bf0e')
 
 
 if __name__ == '__main__':

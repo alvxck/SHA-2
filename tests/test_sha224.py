@@ -1,5 +1,5 @@
 import unittest
-from src.sha224 import *
+from sha2.sha224 import *
 
 class TestSHA224(unittest.TestCase):
     def test_hash(self):
@@ -9,7 +9,7 @@ class TestSHA224(unittest.TestCase):
 
         # case 2: multi-block test
         case2 = SHA224()
-        self.assertEqual(case2.hash('In encryption, data is transformed into a secure format that is unreadable unless the recipient has a key. In its encrypted form, the data may be of unlimited size, often just as long as when unencrypted.'), '6ac8e207a27966b0caaeb56de0788b8f955782f61ef0ed9f86ea98a5')
+        self.assertEqual(case2.hash('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip'), '1da72422a9273122d0cb256a05195a1aa9db963fd0b8f96773386fa0')
 
 
 if __name__ == '__main__':
