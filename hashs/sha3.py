@@ -2,22 +2,28 @@
 # -----------------------------------------------------------------------------------------------------
 
 def sha3_224(message):
+    message = ''.join([format(ord(char), '08b') for char in message]) + '01'
     return sponge(message, 224, 1600-448)
 
 def sha3_256(message):
+    message = ''.join([format(ord(char), '08b') for char in message]) + '01'
     return sponge(message, 256, 1600-512)
 
 def sha3_384(message):
+    message = ''.join([format(ord(char), '08b') for char in message]) + '01'
     return sponge(message, 384, 1600-768)
 
 def sha3_512(message):
+    message = ''.join([format(ord(char), '08b') for char in message]) + '01'
     return sponge(message, 512, 1600-1024)
 
-def shake128(message):
-    pass
+def shake128(message, length):
+    message = ''.join([format(ord(char), '08b') for char in message]) + '1111'
+    return sponge(message, 256, length)
 
-def shake256(message):
-    pass
+def shake256(message, length):
+    message = ''.join([format(ord(char), '08b') for char in message]) + '1111'
+    return sponge(message, 512, length)
 
 # KECCAK-f[b] and Intermediate functions
 # -----------------------------------------------------------------------------------------------------
@@ -28,124 +34,125 @@ def keccak(S):
 
     # 1. State Array Construction
     def state_initialize():
-        A = {}
+        a = {}
 
-        for x in range(0, 5):
-            for y in range(0, 5):
+        for y in range(0, 5):
+            for x in range(0, 5):
                 for z in range(0, w):
-                    A[y, x, z] = int(S[w * (5*x + y) + z])
+                    a[x, y, z] = int(S[w * (5*y + x) + z])
         
-        return A
+        return a
 
-    # 2. Keccak-p Permutation
-    # k0 specification (θ)
-    def θ(A):
-        C = {}
-
-        for y in range(0, 5):
-            for z in range(0, w):
-                C[y, z] = A[y, 0, z] ^ A[y, 1, z] ^ A[y, 2, z] ^ A[y, 3, z] ^ A[y, 4, z]
-
-        D = {}
-
-        for y in range(0, 5):
-            for z in range(0, w):
-                D[y, z] = C[(y-1) % 5, z] ^ C[(y+1) % 5, (z-1) % w]
-
-        A_ = {}
+    # 2. Keccak-p Permutations
+    # θ (Algorithm 1)
+    def θ(a):
+        c = {}
 
         for x in range(0, 5):
-            for y in range(0, 5):
+            for z in range(0, w):
+                c[x, z] = a[x, 0, z] ^ a[x, 1, z] ^ a[x, 2, z] ^ a[x, 3, z] ^ a[x, 4, z]
+
+        d = {}
+
+        for x in range(0, 5):
+            for z in range(0, w):
+                d[x, z] = c[(x-1) % 5, z] ^ c[(x+1) % 5, (z-1) % w]
+
+        a_ = {}
+
+        for y in range(0, 5):
+            for x in range(0, 5):
                 for z in range(0, w):
-                    A_[y, x, z] = A[y, x, z] ^ D[y, z]
+                    a_[x, y, z] = a[x, y, z] ^ d[x, z]
 
-        return A_
+        return a_
 
-    # k1 specification (p).
-    def p(A):
-        A_ = {}
-        (y, x) = (1, 0)
+    # p (Algorithm 2)
+    def p(a):
+        a_ = {}
+        (x, y) = (1, 0)
 
         for z in range(0, w):
-            A_[0, 0, z] = A[0, 0, z]
+            a_[0, 0, z] = a[0, 0, z]
         
         for t in range(0, 24):
             for z in range(0, w):
-                A_[y, x, z] = A[y, x, (z-(t+1)*(t+2)//2) % w]
-            (y, x) = (x, (2*y + 3*x) % 5)
+                a_[x, y, z] = a[x, y, (z-(t+1)*(t+2)//2) % w]
+            (x, y) = (y, (2*x + 3*y) % 5)
 
-        return A_
+        return a_
 
-    # k2 specification (π)
-    def π(A):
-        A_ = {}
+    # π  (Algorithm 3)
+    def π(a):
+        a_ = {}
 
-        for x in range(0, 5):
-            for y in range(0, 5):
+        for y in range(0, 5):
+            for x in range(0, 5):
                 for z in range(0, w):
-                    A_[y, x, z] = A[(y + 3*x) % 5, y, z]
+                    a_[x, y, z] = a[(x + 3*y) % 5, x, z]
 
-        return A_
+        return a_
 
-    # k3 specification (χ)
-    def χ(A):
-        A_ = {}
+    # χ  (Algorithm 4)
+    def χ(a):
+        a_ = {}
 
-        for x in range(0, 5):
-            for y in range(0, 5):
+        for y in range(0, 5):
+            for x in range(0, 5):
                 for z in range(0, w):
-                    A_[y, x, z] = A[y, x, z] ^ ((A[(y+1) % 5, x, z] ^ 1) & A[(y+2) % 5, x, z])
+                    a_[x, y, z] = a[x, y, z] ^ ((a[(x+1) % 5, y, z] ^ 1) & a[(x+2) % 5, y, z])
         
-        return A_
+        return a_
 
-    # k4 specification (rc)
+    # rc  (Algorithm 5)
     def rc(t):
-        R = [1, 0, 0, 0, 0, 0, 0, 0]
-
         if t % 255 == 0:
             return 1
 
-        for i in range(1, t % 255):
-            R.insert(0, 0)
-            R[0] = R[0] ^ R[8] 
-            R[4] = R[4] ^ R[8] 
-            R[5] = R[5] ^ R[8] 
-            R[6] = R[6] ^ R[8]
-            R.pop()
+        r = [1, 0, 0, 0, 0, 0, 0, 0]
+
+        for i in range(1, (t % 255)+1):
+            r.insert(0, 0)
+            r[0] = r[0] ^ r[8] 
+            r[4] = r[4] ^ r[8] 
+            r[5] = r[5] ^ r[8] 
+            r[6] = r[6] ^ r[8]
+            r.pop()
         
-        return R[0]
+        return r[0]
 
-    # k5 specification (ι)
+    # ι  (Algorithm 6)
     def i(A, r):
-        A_ = A
-        RC = [0 for x in range(0, w)]
+        a_ = A
+        rc_ = [0 for x in range(0, w)]
 
-        for j in range(0, l):
-            RC[(2**j) - 1] = rc(j + (7*r))
+        for j in range(0, l+1):
+            rc_[(2**j) - 1] = rc(j + (7*r))
 
         for z in range(0, w):
-            A_[0, 0, z] = A_[0, 0, z] ^ RC[z]
+            a_[0, 0, z] = a_[0, 0, z] ^ rc_[z]
 
-        return A_
+        return a_
 
-    # k6 specification (rnd).
+    # Rnd  
     def Rnd(A, r):
         return i(χ(π(p(θ(A)))), r)
 
     # 3. State Array Decomposition
-    A = state_initialize()
+    a = state_initialize()
 
     for r in range(0, 24):
-        A = Rnd(A, r)
+        a = Rnd(a, r)
 
-    S_ = ''
+    s_ = ''
 
-    for x in range(0, 5):
-        for y in range(0, 5):
+    for y in range(0, 5):
+        for x in range(0, 5):
             for z in range(0, w):
-                S_ += str(A[y, x, z])
+                s_ += str(a[x, y, z])
 
-    return S_
+    return s_
+
 
 # pad10*1 
 # ----------------------------------------------------------------------------------------------------- 
@@ -159,25 +166,24 @@ def pad(x, m):
 # ----------------------------------------------------------------------------------------------------- 
 def sponge(message, bit_length, rate):
     # 1. Set Constants
-    P = ''.join([format(ord(char), '08b') for char in message]) + '01' + pad(rate , 8*len(message) + 2)
-    n = len(P)//rate
+    p = message + pad(rate , len(message))
+    n = len(p)//rate
     c = 1600 - rate
-    S = '0'*1600
-    P_ = {}
-    Z = ''
+    s = '0'
+    p_ = {}
+    z = ''
 
-    for s in range(0, n):
-        P_[s] =  P[s*rate:(s*rate)+rate]
-
-    # 2. 
+    # 2. Absorb
     for i in range(0, n):
-        S = keccak(format(int(S, 2) ^ int(P_[i] + '0'*c, 2), '01600b'))
+        p_[i] =  p[i*rate:(i*rate)+rate]
+        s = keccak(format(int(s, 2) ^ int(p_[i] + '0'*c, 2), '01600b'))
 
-    Z = S[0:rate] 
+    # 3. Squeeze
+    z = s[0:rate] 
 
-    if bit_length >= int(Z, 2):
-        S = keccak(int(S, 2))
-        Z += S[0:rate]
+    if bit_length >= int(z, 2):
+        s = keccak(format(int(s, 2), '01600b'))
+        z += s[0:rate]
     else:
-        return format(int(Z[0:bit_length], 2), 'x')
-
+        return format(int(z[0:bit_length], 2), 'x')
+        

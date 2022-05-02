@@ -14,5 +14,11 @@ class TestSHA224(unittest.TestCase):
     def test_sha_512(self):
         self.assertEqual(sha3_512('hello world'), '840006653e9ac9e95117a15c915caab81662918e925de9e004f774ff82d7079a40d4d27b1b372657c61d46d470304c88c788b3a4527ad074d1dccbee5dbaa99a')
 
+    def test_shake128(self):
+        self.assertEqual(shake128('hello world', 128), '3a9159f071e4dd1c8c4f968607c30942')
+
+    def test_shake256(self):
+        self.assertEqual(shake256('hello world', 256), '369771bb2cb9d2b04c1d54cca487e372d9f187f73f7ba3f65b95c8ee7798c527')
+
 if __name__ == '__main__':
     unittest.main()
