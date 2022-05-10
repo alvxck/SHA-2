@@ -8,7 +8,7 @@ class TestSHA224(unittest.TestCase):
     def test_sha_256(self):
         self.assertEqual(sha3_256('hello world'), '644bcc7e564373040999aac89e7622f3ca71fba1d972fd94a31c3bfbf24e3938')
 
-    def test_sha_284(self):
+    def test_sha_384(self):
         self.assertEqual(sha3_384('hello world'), '83bff28dde1b1bf5810071c6643c08e5b05bdb836effd70b403ea8ea0a634dc4997eb1053aa3593f590f9c63630dd90b')
 
     def test_sha_512(self):
