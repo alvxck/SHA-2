@@ -2,6 +2,17 @@
 # -----------------------------------------------------------------------------------------------------
 
 def sha1(message):
+    '''
+    Hashes message using SHA1.
+
+    Parameters:
+        message (str): message to be hashed.
+
+    Returns:
+        str: SHA1 digest of message.
+    '''
+
+
     entry_constants = [
         0x5a827999, 0x5a827999, 0x5a827999, 0x5a827999, 0x5a827999, 0x5a827999, 0x5a827999, 0x5a827999, 
         0x5a827999, 0x5a827999, 0x5a827999, 0x5a827999, 0x5a827999, 0x5a827999, 0x5a827999, 0x5a827999, 
@@ -67,3 +78,4 @@ def sha1(message):
 
     # 5. Digest Concatenation
     return ''.join([format(hash, '08x') for hash in hash_constants])
+

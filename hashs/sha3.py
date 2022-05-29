@@ -2,26 +2,32 @@
 # -----------------------------------------------------------------------------------------------------
 
 def sha3_224(message):
+    '''Converts message to binary and hashes message using SHA3-224.'''
     message = ''.join([format(ord(char), '08b') for char in message]) + '01'
     return sponge(message, 224, 1600-448)
 
 def sha3_256(message):
+    '''Converts message to binary and hashes message using SHA3-256.'''
     message = ''.join([format(ord(char), '08b') for char in message]) + '01'
     return sponge(message, 256, 1600-512)
 
 def sha3_384(message):
+    '''Converts message to binary and hashes message using SHA3-384.'''
     message = ''.join([format(ord(char), '08b') for char in message]) + '01'
     return sponge(message, 384, 1600-768)
 
 def sha3_512(message):
+    '''Converts message to binary and hashes message using SHA3-512.'''
     message = ''.join([format(ord(char), '08b') for char in message]) + '01'
     return sponge(message, 512, 1600-1024)
 
 def shake128(message, length):
+    '''Converts message to binary and hashes message using SHAKE128.'''
     message = ''.join([format(ord(char), '08b') for char in message]) + '1111'
     return sponge(message, 256, length)
 
 def shake256(message, length):
+    '''Converts message to binary and hashes message using SHAKE256.'''
     message = ''.join([format(ord(char), '08b') for char in message]) + '1111'
     return sponge(message, 512, length)
 
@@ -29,6 +35,16 @@ def shake256(message, length):
 # -----------------------------------------------------------------------------------------------------
 
 def keccak(S):
+    '''
+    Helper function to perform KECCAK permutations on a given message.
+
+    Parameters:
+        S (str): string of 1600-bits used to describe a message.
+
+    Returns:
+        str: 1600-bit string modified by KECCAK permutations [θ, p, π, χ, and i]
+    '''
+
     w = 64
     l = 6
 
@@ -157,6 +173,7 @@ def keccak(S):
 # pad10*1 
 # ----------------------------------------------------------------------------------------------------- 
 def pad(x, m):
+    '''Pad data with 0's until it is a multiple of x'''
     j = (-m-2) % x
 
     return '1' + '0'*j + '1'
@@ -165,6 +182,18 @@ def pad(x, m):
 # sponge construction
 # ----------------------------------------------------------------------------------------------------- 
 def sponge(message, bit_length, rate):
+    '''
+    Helper function to perform absorbtion and squeezing steps of KECCAK.
+
+    Parameters:
+        message (str): message to be hashed.
+        bit_length (int): length of digest.
+        rate (int): hash rate of specified algorithm.
+
+    Returns:
+        str: Digest of message based on bit_length and rate.
+    '''
+
     # 1. Set Constants
     p = message + pad(rate , len(message))
     n = len(p)//rate
@@ -186,4 +215,3 @@ def sponge(message, bit_length, rate):
         z += s[0:rate]
     else:
         return format(int(z[0:bit_length], 2), 'x')
-        
