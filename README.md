@@ -9,7 +9,7 @@ Python implementation of SHA-1, SHA-2, and SHA-3 Cryptographic Hash Algorithms.
 * **[SHA-3:](https://github.com/alvxck/SHA/blob/master/hashs/sha3.py)** [ SHA3-224, SHA3-256, SHA3-384, SHA3-512, SHAKE128, SHAKE256 ]
 
 
-The goal of this project was to create reference implementations of the SHA-1, SHA-2, and SHA-3 Cryptographic Hash Algorithms in order to explore and simplify the hashing processes within each. Since Python is an interpreted language the project capitalizes on it's readabilty to give a human-like breakdown of the stages within each algorithm. This project is not optimised for performance and was created for the sole purpose of understanding how SHA-1, SHA-2, and SHA-3 operate.  
+The goal of this project is to create reference implementations of the SHA-1, SHA-2, and SHA-3 Cryptographic Hash Algorithms in order to explore and simplify the hashing processes within each. This project capitalizes on python's simple syntax and interpretability to give a human-like breakdown of the stages within each algorithm. This project is not optimised for performance and is created for the sole purpose of understanding how SHA-1, SHA-2, and SHA-3 operate.  
 
 <!-- SHA1 -->
 ## SHA-1 Hash Algorithm
