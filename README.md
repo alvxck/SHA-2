@@ -1,5 +1,7 @@
 # SHA
 
+![image](sha-demo.gif)
+
 Python implementation of SHA-1, SHA-2, and SHA-3 Cryptographic Hash Algorithms.
 
 * **[SHA-1:](https://github.com/alvxck/SHA/blob/master/hashs/sha1.py)** [ SHA-1 ]
