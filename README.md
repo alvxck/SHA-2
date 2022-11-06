@@ -1,6 +1,6 @@
 # SHA
 
-![image](sha-demo.gif)
+## Overview
 
 Python implementation of SHA-1, SHA-2, and SHA-3 Cryptographic Hash Algorithms.
 
@@ -11,19 +11,21 @@ Python implementation of SHA-1, SHA-2, and SHA-3 Cryptographic Hash Algorithms.
 * **[SHA-3:](https://github.com/alvxck/SHA/blob/master/hashs/sha3.py)** [ SHA3-224, SHA3-256, SHA3-384, SHA3-512, SHAKE128, SHAKE256 ]
 
 
-The goal of this project is to create reference implementations of the SHA-1, SHA-2, and SHA-3 Cryptographic Hash Algorithms in order to explore and simplify the hashing processes within each. This project capitalizes on python's simple syntax and interpretability to give a human-like breakdown of the stages within each algorithm. This project is not optimised for performance and is created for the sole purpose of understanding how SHA-1, SHA-2, and SHA-3 operate.  
+The goal of this project is to create reference implementations of the SHA-1, SHA-2, and SHA-3 Cryptographic Hash Algorithms within Python. This project capitalizes on python's simple syntax and interpretability to give a human-like breakdown of the stages within each algorithm. This project is not optimised for performance and is created for the sole purpose of understanding the underlying processes within SHA-1, SHA-2, and SHA-3.  
+
+## Getting Started
 
 <!-- SHA1 -->
-## SHA-1 Hash Algorithm
+### SHA-1 Hash Algorithm
 Implementation in accordance with NIST **[FIPS PUB 180-4](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.180-4.pdf)** standard.
 
-### [sha1.py](https://github.com/alvxck/SHA/blob/master/hashs/sha1.py)
+#### [sha1.py](https://github.com/alvxck/SHA/blob/master/hashs/sha1.py)
 ```
 sha1('hello world')
 > '2aae6c35c94fcfb415dbe95f408b9ce91ee846ed'
 ```
 
-### Hashing Process
+#### Hashing Process
 
 1. Pre Process
     * Convert each character from `message` to 8-bits and append to `data`. Then append a single *1*.
@@ -48,11 +50,11 @@ sha1('hello world')
     * Return digest to user.
 
 <!-- SHA2 -->
-## SHA-2 Hash Algorithms
+### SHA-2 Hash Algorithms
 
 Implementations in accordance with NIST **[FIPS PUB 180-4](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.180-4.pdf)** standard.
 
-### [sha2.py](https://github.com/alvxck/SHA/blob/master/hashs/sha2.py)
+#### [sha2.py](https://github.com/alvxck/SHA/blob/master/hashs/sha2.py)
 ```
 sha224('hello world') 
 > '2f05477fc24bb4faefd86517156dafdecec45b8ad3cf2522a563582b'
@@ -73,7 +75,7 @@ sha512_256('hello world')
 > '0ac561fac838104e3f2e4ad107b4bee3e938bf15f2b15f009ccccd61a913f017'
 ```
 
-### Hashing Process
+#### Hashing Process
 * 32-bit [ SHA-224, SHA-256 ] 
 * 64-bit [ SHA-384, SHA-512, SHA-512/224, SHA-512/256 ]
 
@@ -102,11 +104,11 @@ sha512_256('hello world')
     * Return digest to user.
 
 <!-- SHA3 -->
-## SHA-3 Hash Algorithms
+### SHA-3 Hash Algorithms
 
 Implementations in accordance with NIST **[FIPS PUB 202](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf)** standard.
 
-### [sha3.py](https://github.com/alvxck/SHA/blob/master/hashs/sha3.py)
+#### [sha3.py](https://github.com/alvxck/SHA/blob/master/hashs/sha3.py)
 ```
 sha3_224('hello world')
 > 'dfb7f18c77e928bb56faeb2da27291bd790bc1045cde45f3210bb6c5'
@@ -127,7 +129,7 @@ shake256('hello world', 256)
 > '369771bb2cb9d2b04c1d54cca487e372d9f187f73f7ba3f65b95c8ee7798c527'
 ```
 
-### Hashing Process
+#### Hashing Process
 
 1. State Array Construction **[[3.1.2]](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf#page=17)**
     * Convert a string `S` of 1600-bits to a 5 x 5 x 64 array `A` where `A`[x, y, z] = `S`[w(5y+x)+z].

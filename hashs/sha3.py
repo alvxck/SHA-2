@@ -2,32 +2,80 @@
 # -----------------------------------------------------------------------------------------------------
 
 def sha3_224(message):
-    '''Converts message to binary and hashes message using SHA3-224.'''
+    '''Converts message to binary and hashes message using SHA3-224.
+    
+    Parameters
+    ----------
+    message : str 
+        message to be hashed.
+            
+    '''
+
     message = ''.join([format(ord(char), '08b') for char in message]) + '01'
     return sponge(message, 224, 1600-448)
 
 def sha3_256(message):
-    '''Converts message to binary and hashes message using SHA3-256.'''
+    '''Converts message to binary and hashes message using SHA3-256.
+    
+    Parameters
+    ----------
+    message : str 
+        message to be hashed.
+            
+    '''
+
     message = ''.join([format(ord(char), '08b') for char in message]) + '01'
     return sponge(message, 256, 1600-512)
 
 def sha3_384(message):
-    '''Converts message to binary and hashes message using SHA3-384.'''
+    '''Converts message to binary and hashes message using SHA3-384.
+    
+    Parameters
+    ----------
+    message : str 
+        message to be hashed.
+            
+    '''
+
     message = ''.join([format(ord(char), '08b') for char in message]) + '01'
     return sponge(message, 384, 1600-768)
 
 def sha3_512(message):
-    '''Converts message to binary and hashes message using SHA3-512.'''
+    '''Converts message to binary and hashes message using SHA3-512.
+    
+    Parameters
+    ----------
+    message : str 
+        message to be hashed.
+            
+    '''
+
     message = ''.join([format(ord(char), '08b') for char in message]) + '01'
     return sponge(message, 512, 1600-1024)
 
 def shake128(message, length):
-    '''Converts message to binary and hashes message using SHAKE128.'''
+    '''Converts message to binary and hashes message using SHAKE128.
+    
+    Parameters
+    ----------
+    message : str 
+        message to be hashed.
+            
+    '''
+
     message = ''.join([format(ord(char), '08b') for char in message]) + '1111'
     return sponge(message, 256, length)
 
 def shake256(message, length):
-    '''Converts message to binary and hashes message using SHAKE256.'''
+    '''Converts message to binary and hashes message using SHAKE256.
+    
+    Parameters
+    ----------
+    message : str 
+        message to be hashed.
+            
+    '''
+
     message = ''.join([format(ord(char), '08b') for char in message]) + '1111'
     return sponge(message, 512, length)
 
@@ -35,14 +83,13 @@ def shake256(message, length):
 # -----------------------------------------------------------------------------------------------------
 
 def keccak(S):
-    '''
-    Helper function to perform KECCAK permutations on a given message.
+    '''Helper function to perform KECCAK permutations on a given message.
+    Returns a 1600-bit string modified by KECCAK permutations [θ, p, π, χ, and i]
 
     Parameters:
-        S (str): string of 1600-bits used to describe a message.
+    S : str 
+        string of 1600-bits used to describe a message.
 
-    Returns:
-        str: 1600-bit string modified by KECCAK permutations [θ, p, π, χ, and i]
     '''
 
     w = 64
@@ -50,6 +97,7 @@ def keccak(S):
 
     # 1. State Array Construction
     def state_initialize():
+        '''Initializes state array based on {S}'''
         a = {}
 
         for y in range(0, 5):
@@ -62,6 +110,8 @@ def keccak(S):
     # 2. Keccak-p Permutations
     # θ (Algorithm 1)
     def θ(a):
+        '''Modifies a given state array {a} based on Keccak-p (θ) permutations.'''
+
         c = {}
 
         for x in range(0, 5):
@@ -85,6 +135,8 @@ def keccak(S):
 
     # p (Algorithm 2)
     def p(a):
+        '''Modifies a given state array {a} based on Keccak-p (p) permutations.'''
+
         a_ = {}
         (x, y) = (1, 0)
 
@@ -98,8 +150,10 @@ def keccak(S):
 
         return a_
 
-    # π  (Algorithm 3)
+    # π (Algorithm 3)
     def π(a):
+        '''Modifies a given state array {a} based on Keccak-p (π) permutations.'''
+
         a_ = {}
 
         for y in range(0, 5):
@@ -109,8 +163,10 @@ def keccak(S):
 
         return a_
 
-    # χ  (Algorithm 4)
+    # χ (Algorithm 4)
     def χ(a):
+        '''Modifies a given state array {a} based on Keccak-p (χ) permutations.'''
+
         a_ = {}
 
         for y in range(0, 5):
@@ -120,8 +176,10 @@ def keccak(S):
         
         return a_
 
-    # rc  (Algorithm 5)
+    # rc (Algorithm 5)
     def rc(t):
+        '''Initializes a round constant.'''
+
         if t % 255 == 0:
             return 1
 
@@ -137,8 +195,10 @@ def keccak(S):
         
         return r[0]
 
-    # ι  (Algorithm 6)
+    # ι (Algorithm 6)
     def i(A, r):
+        '''Modifies a given state array {A} based ona round constant {rc} '''
+
         a_ = A
         rc_ = [0 for x in range(0, w)]
 
@@ -152,6 +212,8 @@ def keccak(S):
 
     # Rnd  
     def Rnd(A, r):
+        '''Peform all KECCAK permutations on state array {A}.'''
+
         return i(χ(π(p(θ(A)))), r)
 
     # 3. State Array Decomposition
@@ -173,7 +235,15 @@ def keccak(S):
 # pad10*1 
 # ----------------------------------------------------------------------------------------------------- 
 def pad(x, m):
-    '''Pad data with 0's until it is a multiple of x'''
+    '''Pad data with 0's until it is a multiple of x.
+    
+    Parameters
+    ----------
+    message : str 
+        message to be hashed.
+            
+    '''
+
     j = (-m-2) % x
 
     return '1' + '0'*j + '1'
@@ -182,16 +252,17 @@ def pad(x, m):
 # sponge construction
 # ----------------------------------------------------------------------------------------------------- 
 def sponge(message, bit_length, rate):
-    '''
-    Helper function to perform absorbtion and squeezing steps of KECCAK.
+    '''Helper function to perform absorbtion and squeezing steps of KECCAK. 
+    Returns Digest of message based on bit_length and rate.
 
     Parameters:
-        message (str): message to be hashed.
-        bit_length (int): length of digest.
-        rate (int): hash rate of specified algorithm.
+    message : str 
+        message to be hashed.
+    bit_length : int
+        length of digest.
+    rate : int 
+        hash rate of specified algorithm.
 
-    Returns:
-        str: Digest of message based on bit_length and rate.
     '''
 
     # 1. Set Constants

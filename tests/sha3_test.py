@@ -1,5 +1,5 @@
 import pytest
-from hashs.sha3 import *
+from hashs.sha3 import sha3_224, sha3_256, sha3_384, sha3_512, shake128, shake256
 
 class TestSHA3:
     def test_sha_224(self):
